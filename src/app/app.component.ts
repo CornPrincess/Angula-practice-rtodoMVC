@@ -35,7 +35,7 @@ export class AppComponent {
       done: false
     });
 
-    // 清楚文本框
+    // 清除文本框
     e.target.value = '';
     console.log(e.keyCode);
   }
@@ -43,4 +43,13 @@ export class AppComponent {
   print(): void {
     console.log('The current todos: ', this.todos);
   }
+
+  get toggleAll() {
+    return this.todos.every(t => t.done);
+  }
+
+  set toggleAll(val) {
+    this.todos.forEach(t => t.done = val);
+  }
+
 }
