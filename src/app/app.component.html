@@ -28,25 +28,28 @@
           完成状态：completed
           编辑状态：editing
         -->
-        <!--      <li class="completed">-->
-        <!--        <div class="view">-->
-        <!--          <input class="toggle" type="checkbox" checked>-->
-        <!--          <label>Taste JavaScript</label>-->
-        <!--          <button class="destroy"></button>-->
-        <!--        </div>-->
-        <!--        <input class="edit" value="Create a TodoMVC template">-->
-        <!--      </li>-->
-        <!--      <li>-->
-        <!--        <div class="view">-->
-        <!--          <input class="toggle" type="checkbox">-->
-        <!--          <label>Buy a unicorn</label>-->
-        <!--          <button class="destroy"></button>-->
-        <!--        </div>-->
-        <!--        <input class="edit" value="Rule the web">-->
-        <!--      </li>-->
+<!--              <li class="completed">-->
+<!--                <div class="view">-->
+<!--                  <input class="toggle" type="checkbox" checked>-->
+<!--                  <label>Taste JavaScript</label>-->
+<!--                  <button class="destroy"></button>-->
+<!--                </div>-->
+<!--                <input class="edit" value="Create a TodoMVC template">-->
+<!--              </li>-->
+<!--              <li>-->
+<!--                <div class="view">-->
+<!--                  <input class="toggle" type="checkbox">-->
+<!--                  <label>Buy a unicorn</label>-->
+<!--                  <button class="destroy"></button>-->
+<!--                </div>-->
+<!--                <input class="edit" value="Rule the web">-->
+<!--              </li>-->
         <li
-          *ngFor="let todo of todos"
-          [ngClass]="{completed: todo.done}"
+          *ngFor="let todo of filterTodos; let i = index;"
+          [ngClass]="{
+            completed: todo.done,
+            editing: currentEditing === todo
+          }"
         >
           <div class="view">
             <input
@@ -55,31 +58,49 @@
               [(ngModel)]="todo.done"
               (click)="print()"
             >
-            <label>{{todo.title}}</label>
-            <button class="destory"></button>
+            <label (dblclick)="currentEditing = todo">{{todo.title}}</label>
+            <button
+              class="destory"
+              (click)="removeTodo(i)"
+            ></button>
           </div>
-          <input class="edit" value="Create a TodoMVC template">
+          <input
+            class="edit"
+            [value]="todo.title"
+            (keyup.escape)="handleEditKeyup($event)"
+            (keyup.enter)="saveEdit(todo, $event)"
+            (blur)="saveEdit(todo, $event)"
+          >
         </li>
       </ul>
     </section >
     <!-- This footer should hidden by default and shown when there are todos -->
     <footer class="footer" >
       <!-- This should be `0 items left` by default -->
-      <span class="todo-count"><strong>0</strong> item left</span>
+      <span class="todo-count"><strong>{{ remainTodoCount }}</strong> item left</span>
       <!-- Remove this if you don't implement routing -->
       <ul class="filters">
         <li>
-          <a class="selected" href="#/">All</a>
+          <a
+            [ngClass]="{selected: visibility === 'all'}"
+            href="#/">All</a>
         </li>
         <li>
-          <a href="#/active">Active</a>
+          <a
+            [ngClass]="{selected: visibility === 'active'}"
+            href="#/active">Active</a>
         </li>
         <li>
-          <a href="#/completed">Completed</a>
+          <a
+            [ngClass]="{selected: visibility === 'completed'}"
+            href="#/completed">Completed</a>
         </li>
       </ul>
       <!-- Hidden if no completed items are left ↓ -->
-      <button class="clear-completed">Clear completed</button>
+      <button
+        class="clear-completed"
+        (click)="clearAllDone()"
+      >Clear completed</button>
     </footer>
   </ng-template>
 
